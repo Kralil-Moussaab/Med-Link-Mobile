@@ -1,6 +1,7 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { Slot, Tabs, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
+import { TouchableOpacity, TouchableOpacityProps } from "react-native";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import "./global.css";
 
@@ -53,6 +54,26 @@ function RootLayoutNav() {
           backgroundColor: "white",
         },
         headerShadowVisible: false,
+        tabBarButton: (props) => {
+          const { children, ...rest } = props;
+          const touchableProps: TouchableOpacityProps = {
+            ...rest,
+            activeOpacity: 0.7,
+            delayLongPress: rest.delayLongPress || undefined,
+            disabled: rest.disabled || undefined,
+            onBlur: rest.onBlur || undefined,
+            onFocus: rest.onFocus || undefined,
+            onLongPress: rest.onLongPress || undefined,
+            onPress: rest.onPress || undefined,
+            onPressIn: rest.onPressIn || undefined,
+            onPressOut: rest.onPressOut || undefined,
+            testID: rest.testID || undefined,
+          };
+
+          return (
+            <TouchableOpacity {...touchableProps}>{children}</TouchableOpacity>
+          );
+        },
       }}
     >
       <Tabs.Screen
