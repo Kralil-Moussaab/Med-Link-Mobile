@@ -234,6 +234,31 @@ export const appointmentService = {
   },
 };
 
+export const chatService = {
+  getDoctorSaved: async () => {
+    try {
+      const response = await api.get("chat/showDoctor");
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error(`Error fetching doctor saved:`, error);
+      throw error;
+    }
+  },
+
+  getDoctorChat: async (id: string) => {
+    try {
+      const response = await api.get(`/chat/showChat/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error(`Error fetching doctor chat:`, error);
+      throw error;
+    }
+  },
+};
+
 interface RegisterData {
   name: string;
   email: string;

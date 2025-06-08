@@ -1,5 +1,5 @@
 import { FontAwesome } from "@expo/vector-icons";
-import { Slot, Tabs, useRouter, useSegments } from "expo-router";
+import { Stack, Tabs, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
 import { TouchableOpacity, TouchableOpacityProps } from "react-native";
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -12,7 +12,6 @@ function RootLayoutNav() {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    // Wait for the initial render to complete
     setIsReady(true);
   }, []);
 
@@ -27,15 +26,17 @@ function RootLayoutNav() {
     } else if (!isAuthenticated && !inAuthGroup && !isLandingPage) {
       router.replace("/landing");
     }
-  }, [isAuthenticated, segments, isReady]);
+  }, [isAuthenticated, isReady, segments]);
 
-  // Show loading state while checking initial auth
-  if (!isReady) {
-    return <Slot />;
-  }
-
-  if (!isAuthenticated) {
-    return <Slot />;
+  if (!isReady || !isAuthenticated) {
+    return (
+      <Stack>
+        <Stack.Screen name="landing" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="signup" options={{ headerShown: false }} />
+        <Stack.Screen name="+not-found" options={{ headerShown: false }} />
+      </Stack>
+    );
   }
 
   return (
@@ -95,6 +96,15 @@ function RootLayoutNav() {
         }}
       />
       <Tabs.Screen
+        name="my-chats"
+        options={{
+          title: "My Chats",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name="comments" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="appointments"
         options={{
           title: "Appointments",
@@ -117,6 +127,7 @@ function RootLayoutNav() {
       <Tabs.Screen name="landing" options={{ href: null }} />
       <Tabs.Screen name="doctor-profile" options={{ href: null }} />
       <Tabs.Screen name="book-consultation" options={{ href: null }} />
+      <Tabs.Screen name="chat-detail" options={{ href: null }} />
     </Tabs>
   );
 }
