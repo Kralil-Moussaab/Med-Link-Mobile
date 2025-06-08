@@ -410,9 +410,14 @@ export default function DoctorsScreen() {
                       </Text>
                     </View>
 
-                    <TouchableOpacity className="bg-blue-500 p-3 rounded-lg mt-4">
+                    <TouchableOpacity
+                      className="bg-blue-500 p-3 rounded-lg mt-4"
+                      onPress={() =>
+                        router.push(`/doctor-profile?id=${doctor.id}`)
+                      }
+                    >
                       <Text className="text-white text-center font-semibold">
-                        Book Appointment
+                        See Profile
                       </Text>
                     </TouchableOpacity>
                   </View>

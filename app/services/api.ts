@@ -165,6 +165,19 @@ export const doctorService = {
       throw error;
     }
   },
+
+  getDoctorById: async (id: string) => {
+    try {
+      const response = await api.get(`/doctors/${id}`);
+      return {
+        success: true,
+        data: response.data.data,
+      };
+    } catch (error: any) {
+      console.error(`Error fetching doctor with id ${id}:`, error);
+      throw error;
+    }
+  },
 };
 
 export const appointmentService = {
