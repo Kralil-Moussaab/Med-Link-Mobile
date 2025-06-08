@@ -95,6 +95,7 @@ function RootLayoutNav() {
       <Tabs.Screen name="signup" options={{ href: null }} />
       <Tabs.Screen name="landing" options={{ href: null }} />
       <Tabs.Screen name="doctor-profile" options={{ href: null }} />
+      <Tabs.Screen name="book-consultation" options={{ href: null }} />
     </Tabs>
   );
 }

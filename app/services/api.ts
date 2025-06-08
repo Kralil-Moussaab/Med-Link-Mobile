@@ -196,6 +196,42 @@ export const appointmentService = {
       };
     }
   },
+
+  getAppointmentSlotsById: async (id: string) => {
+    try {
+      const response = await api.get(`/appointments/doctor/Scheduled/${id}`);
+      return {
+        success: true,
+        data: response.data.data,
+      };
+    } catch (error: any) {
+      console.error(`Error fetching doctor with id ${id}:`, error);
+      return {
+        success: false,
+        error:
+          error.response?.data?.message ||
+          `Failed to fetch slots for doctor ${id}`,
+      };
+    }
+  },
+
+  approveAppointment: async (id: string, userId: string) => {
+    try {
+      const response = await api.patch(`/appointments/scheduled/${id}`, {
+        userId,
+      });
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error("Error approving appointment:", error);
+      return {
+        success: false,
+        error: error.response?.data?.message || "Failed to approve appointment",
+      };
+    }
+  },
 };
 
 interface RegisterData {

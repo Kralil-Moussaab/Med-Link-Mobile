@@ -194,7 +194,10 @@ export default function DoctorProfileScreen() {
       </View>
 
       <View className="p-6 pt-0">
-        <TouchableOpacity className="bg-blue-600 p-4 rounded-xl shadow-md flex-row items-center justify-center">
+        <TouchableOpacity
+          className="bg-blue-600 p-4 rounded-xl shadow-md flex-row items-center justify-center"
+          onPress={() => router.push(`/book-consultation?id=${doctor.id}`)}
+        >
           <FontAwesome name="calendar-plus-o" size={22} color="white" />
           <Text className="text-white text-center font-semibold text-lg ml-3">
             Book Appointment
