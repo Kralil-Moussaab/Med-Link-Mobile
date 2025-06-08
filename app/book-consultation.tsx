@@ -71,20 +71,25 @@ export default function BookConsultationScreen() {
 
     try {
       setApproving(true);
-      const userId = await AsyncStorage.getItem("user"); // Assuming user ID is stored
+      const userId = await AsyncStorage.getItem("user");
       if (!userId) {
         Alert.alert("Authentication Error", "User not logged in.");
         return;
       }
       const parsedUser = JSON.parse(userId);
 
+      console.log("Attempting to approve appointment with:", {
+        appointmentId: selectedSlot,
+        userId: parsedUser.id,
+      });
+
       const response = await appointmentService.approveAppointment(
         selectedSlot.toString(),
-        parsedUser._id
+        parsedUser.id
       );
       if (response.success) {
         Alert.alert("Success", "Appointment booked successfully!");
-        router.replace(`/doctor-profile?id=${id}`); // Navigate back to doctor profile
+        router.replace(`/doctor-profile?id=${id}`);
       } else {
         Alert.alert(
           "Booking Failed",
@@ -103,7 +108,7 @@ export default function BookConsultationScreen() {
   };
 
   const groupedSlots = slots.reduce<GroupedSlots>((acc, slot) => {
-    const date = slot.date; // Assuming slot.date is already in 'YYYY-MM-DD' format
+    const date = slot.date; 
     if (!acc[date]) {
       acc[date] = [];
     }
