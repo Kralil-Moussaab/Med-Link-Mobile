@@ -19,11 +19,12 @@ function RootLayoutNav() {
     if (!isReady) return;
 
     const inAuthGroup = segments[0] === "login" || segments[0] === "signup";
+    const isLandingPage = segments[0] === "landing";
 
     if (isAuthenticated && inAuthGroup) {
       router.replace("/");
-    } else if (!isAuthenticated && !inAuthGroup) {
-      router.replace("/login");
+    } else if (!isAuthenticated && !inAuthGroup && !isLandingPage) {
+      router.replace("/landing");
     }
   }, [isAuthenticated, segments, isReady]);
 
@@ -90,6 +91,9 @@ function RootLayoutNav() {
           ),
         }}
       />
+      <Tabs.Screen name="login" options={{ href: null }} />
+      <Tabs.Screen name="signup" options={{ href: null }} />
+      <Tabs.Screen name="landing" options={{ href: null }} />
     </Tabs>
   );
 }

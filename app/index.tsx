@@ -21,11 +21,9 @@ export default function HomeScreen() {
       setLoading(true);
       await authService.logout();
 
-      // Clear stored data
       await AsyncStorage.removeItem("token");
       await AsyncStorage.removeItem("user");
 
-      // Update auth state
       setIsAuthenticated(false);
     } catch (error: any) {
       console.error("Logout error:", error);

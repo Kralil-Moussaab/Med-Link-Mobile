@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Med-Link-Mobile",
-    "slug": "Med-Link-Mobile",
+    "name": "Med-Link",
+    "slug": "Med-Link",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
