@@ -1,7 +1,13 @@
 import { FontAwesome } from "@expo/vector-icons";
+import * as NavigationBar from "expo-navigation-bar";
 import { Stack, Tabs, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
-import { TouchableOpacity, TouchableOpacityProps } from "react-native";
+import {
+  AppState,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+} from "react-native";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import "./global.css";
 
@@ -11,8 +17,26 @@ function RootLayoutNav() {
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
 
+  const hideNavigationBar = async () => {
+    await NavigationBar.setVisibilityAsync("hidden");
+    await NavigationBar.setBackgroundColorAsync("transparent");
+  };
+
   useEffect(() => {
     setIsReady(true);
+    hideNavigationBar();
+
+    // Listen for app state changes
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (nextAppState === "active") {
+        hideNavigationBar();
+      }
+    });
+
+    // Cleanup subscription
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   useEffect(() => {
@@ -44,17 +68,37 @@ function RootLayoutNav() {
       screenOptions={{
         tabBarActiveTintColor: "#3B82F6",
         tabBarInactiveTintColor: "#6B7280",
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "600",
+          marginTop: 4,
+        },
         tabBarStyle: {
           backgroundColor: "white",
-          borderTopWidth: 1,
-          borderTopColor: "#E5E7EB",
-          paddingBottom: 5,
-          paddingTop: 5,
+          borderTopWidth: 0,
+          elevation: 8,
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: -2,
+          },
+          shadowOpacity: 0.4,
+          shadowRadius: 8,
+          height: 65,
+          paddingBottom: 8,
+          paddingTop: 8,
         },
         headerStyle: {
           backgroundColor: "white",
+          elevation: 0,
+          shadowOpacity: 0,
         },
         headerShadowVisible: false,
+        headerTitleStyle: {
+          fontSize: 20,
+          fontWeight: "700",
+          color: "#1F2937",
+        },
         tabBarButton: (props) => {
           const { children, ...rest } = props;
           const touchableProps: TouchableOpacityProps = {
@@ -72,7 +116,11 @@ function RootLayoutNav() {
           };
 
           return (
-            <TouchableOpacity {...touchableProps}>{children}</TouchableOpacity>
+            <TouchableOpacity {...touchableProps}>
+              <View style={{ alignItems: "center", justifyContent: "center" }}>
+                {children}
+              </View>
+            </TouchableOpacity>
           );
         },
       }}
@@ -89,7 +137,7 @@ function RootLayoutNav() {
       <Tabs.Screen
         name="doctors"
         options={{
-          title: "Doctors",
+          title: "Find Doctors",
           tabBarIcon: ({ color }) => (
             <FontAwesome name="user-md" size={24} color={color} />
           ),
@@ -107,7 +155,7 @@ function RootLayoutNav() {
       <Tabs.Screen
         name="appointments"
         options={{
-          title: "Appointments",
+          title: "My Appointments",
           tabBarIcon: ({ color }) => (
             <FontAwesome name="calendar" size={24} color={color} />
           ),

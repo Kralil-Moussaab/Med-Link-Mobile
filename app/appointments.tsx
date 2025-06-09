@@ -67,11 +67,7 @@ export default function AppointmentsScreen() {
 
   return (
     <View className="flex-1 bg-white">
-      <View className="p-6">
-        <Text className="text-2xl font-bold text-gray-800 mb-6">
-          My Appointments
-        </Text>
-
+      <View className="p-6 pt-2">
         <ScrollView className="space-y-6">
           {loading ? (
             <Text className="text-center text-gray-500">

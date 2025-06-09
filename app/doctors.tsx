@@ -234,11 +234,7 @@ export default function DoctorsScreen() {
 
   return (
     <View className="flex-1 bg-white">
-      <View className="p-4 flex-1">
-        <Text className="text-2xl font-bold text-gray-800 mb-4">
-          Find a Doctor
-        </Text>
-
+      <View className="p-4 flex-1 pt-2">
         {/* Search Bar */}
         <View className="bg-gray-100 rounded-lg p-3 flex-row items-center mb-4">
           <FontAwesome name="search" size={20} color="#6B7280" />
