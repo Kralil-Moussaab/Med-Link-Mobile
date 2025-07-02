@@ -7,8 +7,8 @@ export default function LandingScreen() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.replace("/login");
-    }, 5000); // 5 seconds
+      router.replace("/choose-type");
+    }, 3000); // 3 seconds
 
     return () => clearTimeout(timer);
   }, []);
@@ -17,7 +17,7 @@ export default function LandingScreen() {
     <View className="flex-1 bg-blue-500 justify-center items-center">
       <View className="items-center space-y-6">
         <Image
-          source={require("../assets/logo.png")}
+          source={require("../assets/medlink-rb.png")}
           className="w-40 h-40"
           resizeMode="contain"
         />

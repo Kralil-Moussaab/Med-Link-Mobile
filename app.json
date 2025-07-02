@@ -4,7 +4,7 @@
     "slug": "Med-Link",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/medlink.png",
     "scheme": "medlinkmobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

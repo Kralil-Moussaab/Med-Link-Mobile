@@ -5,17 +5,16 @@ import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useAuth } from "./context/AuthContext";
 import { authService } from "./services/api";
 
-export default function LoginScreen() {
+export default function DoctorLoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isDoctor, setIsDoctor] = useState(false);
   const router = useRouter();
   const { isAuthenticated, setIsAuthenticated, setUser, isInitialized } = useAuth();
 
   useEffect(() => {
     if (isInitialized && isAuthenticated) {
-      router.replace("/");
+      router.replace("/doctor-home");
     }
   }, [isAuthenticated, isInitialized]);
 
@@ -27,29 +26,30 @@ export default function LoginScreen() {
 
     try {
       setLoading(true);
-      console.log("Starting login process...");
+      console.log("Starting doctor login process...");
       
-      let response;
-      if (isDoctor) {
-        response = await authService.loginDoctor(email, password);
-        if (!response.success) {
-          throw new Error(response.error);
-        }
-        console.log("Doctor login successful:", response);
-      } else {
-        response = await authService.login(email, password);
-        console.log("Patient login successful:", response);
+      const response = await authService.loginDoctor(email, password);
+      if (!response.success) {
+        throw new Error(response.error);
       }
+      console.log("Doctor login successful:", response);
 
       // Store token and user data
-      await AsyncStorage.setItem("token", response.data?.token || response.token);
-      await AsyncStorage.setItem("user", JSON.stringify(response.data?.user || response.user));
+      await AsyncStorage.setItem("token", response.data?.token || "");
+      await AsyncStorage.setItem("user", JSON.stringify(response.data?.user || {}));
 
       // Update auth state
       setIsAuthenticated(true);
-      setUser(response.data?.user || response.user);
+      
+      // Set user data with doctor type
+      const userData = {
+        ...response.data?.user,
+        type: 'doctor'
+      };
+      setUser(userData);
+      console.log("Doctor login - User data set:", userData);
     } catch (error: any) {
-      console.error("Login error in screen:", error);
+      console.error("Doctor login error in screen:", error);
       Alert.alert(
         "Login Failed",
         error.message || "An error occurred during login. Please try again."
@@ -72,12 +72,11 @@ export default function LoginScreen() {
     <View className="flex-1 bg-white p-6">
       <View className="flex-1 justify-center">
         <View className="items-center mb-7">
-          <Text className="text-3xl font-bold text-blue-500 ">
-            Welcome Back
+          <Text className="text-3xl font-bold text-blue-500">
+            Welcome Back, Doctor
           </Text>
           <Text className="text-gray-500 mt-2">Sign in to continue</Text>
         </View>
-
 
         <View className="space-y-4">
           <View>
@@ -113,14 +112,14 @@ export default function LoginScreen() {
             disabled={loading}
           >
             <Text className="text-white text-center font-semibold text-lg">
-              {loading ? "Signing in..." : `Sign In as ${isDoctor ? "Doctor" : "Patient"}`}
+              {loading ? "Signing in..." : "Sign In as Doctor"}
             </Text>
           </TouchableOpacity>
 
           <View className="flex-row justify-center mt-4">
             <Text className="text-gray-500">Don't have an account? </Text>
             <Link 
-              href={isDoctor ? "/doctor-signup" : "/signup"} 
+              href="/doctor-signup" 
               className="text-blue-500 font-semibold"
             >
               Sign Up
@@ -139,4 +138,4 @@ export default function LoginScreen() {
       </View>
     </View>
   );
-}
+} 

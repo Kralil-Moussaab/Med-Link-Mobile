@@ -12,8 +12,7 @@ import {
 import { chatService } from "./services/api";
 
 // Get the base URL from the API configuration
-const API_URL = "http://192.168.1.106:8000/api/v1";
-const UPLOADS_URL = "http://192.168.1.106:8000";
+const UPLOADS_URL = "http://192.168.210.217:8000";
 
 interface ChatMessage {
   id: number;

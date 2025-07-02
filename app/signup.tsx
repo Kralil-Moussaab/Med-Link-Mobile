@@ -18,6 +18,7 @@ const genders = ["male", "female"];
 
 export default function SignupScreen() {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isDoctor, setIsDoctor] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -103,6 +104,12 @@ export default function SignupScreen() {
     try {
       setLoading(true);
 
+      if (isDoctor) {
+        // Redirect to doctor signup for more complex form
+        router.push("/doctor-signup");
+        return;
+      }
+
       const formattedData = {
         name,
         email,
@@ -145,7 +152,10 @@ export default function SignupScreen() {
 
   const renderStep1 = () => (
     <View className="space-y-4">
-      <View>
+      {/* Toggle between Patient and Doctor */}
+
+
+      <View className="mb-3">
         <Text className="text-gray-700 mb-2">Full Name</Text>
         <TextInput
           className="bg-gray-100 p-4 rounded-lg"

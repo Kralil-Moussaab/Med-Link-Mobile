@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 // Your computer's IP address
-const API_URL = "http://192.168.1.106:8000/api/v1";
+const API_URL = "http://192.168.210.217:8000/api/v1";
 
 const api = axios.create({
   baseURL: API_URL,
@@ -33,7 +33,7 @@ export const authService = {
 
       if (response.data.token) {
         await AsyncStorage.setItem("token", response.data.token);
-        await AsyncStorage.setItem("user", JSON.stringify(response.data.user));
+        await AsyncStorage.setItem("user", JSON.stringify({ ...response.data.user, type: 'patient' }));
         await AsyncStorage.setItem("userType", "user");
         return response.data;
       } else {
@@ -62,6 +62,77 @@ export const authService = {
     }
   },
 
+  loginDoctor: async (email: string, password: string) => {
+    try {
+      console.log("Attempting doctor login with:", { email, password });
+      const response = await api.post("/doctors/login", { email, password });
+      const { token, doctor } = response.data;
+
+      if (token) {
+        await AsyncStorage.setItem("token", token);
+        await AsyncStorage.setItem("user", JSON.stringify({ ...doctor, type: 'doctor' }));
+        await AsyncStorage.setItem("userType", "doctor");
+        return {
+          success: true,
+          data: { token, user: { ...doctor, type: 'doctor' } },
+        };
+      }
+      return { success: false, error: "Invalid response from server" };
+    } catch (error: any) {
+      console.error("Doctor login error:", error.response?.data || error.message);
+      return {
+        success: false,
+        error: error.response?.data?.message || "Login failed. Please try again.",
+      };
+    }
+  },
+
+  registerDoctor: async (doctorData: any) => {
+    try {
+      const formData = new FormData();
+
+      // Add all doctor data to FormData
+      Object.keys(doctorData).forEach((key) => {
+        if (key === "picture" && doctorData[key]) {
+          // Properly format the image for FormData
+          const imageFile = {
+            uri: doctorData[key].uri,
+            type: 'image/jpeg', // or get from the image object if available
+            name: 'profile-picture.jpg'
+          };
+          formData.append("picture", imageFile as any);
+        } else if (doctorData[key] !== null && doctorData[key] !== undefined) {
+          formData.append(key, doctorData[key].toString());
+        }
+      });
+
+      const response = await api.post("/doctors", formData);
+      const { token, doctor } = response.data;
+
+      if (token) {
+        await AsyncStorage.setItem("token", token);
+        await AsyncStorage.setItem("user", JSON.stringify({ ...doctor, type: 'doctor' }));
+        await AsyncStorage.setItem("userType", "doctor");
+        return {
+          success: true,
+          data: { token, user: { ...doctor, type: 'doctor' } },
+        };
+      }
+      return { success: false, error: "Invalid response from server" };
+    } catch (error: any) {
+      console.error(
+        "Doctor registration error:",
+        error.response?.data || error.message
+      );
+      return {
+        success: false,
+        error:
+          error.response?.data?.message ||
+          "Registration failed. Please try again.",
+      };
+    }
+  },
+
   register: async (data: RegisterData) => {
     try {
       console.log("Sending registration data:", data);
@@ -80,7 +151,7 @@ export const authService = {
 
       if (response.data.token) {
         await AsyncStorage.setItem("token", response.data.token);
-        await AsyncStorage.setItem("user", JSON.stringify(response.data.user));
+        await AsyncStorage.setItem("user", JSON.stringify({ ...response.data.user, type: 'patient' }));
         await AsyncStorage.setItem("userType", "user");
       }
       return response.data;
@@ -178,6 +249,22 @@ export const doctorService = {
       throw error;
     }
   },
+
+  getStatsDoctor: async () => {
+    try {
+      const response = await api.get("doctor/myStats");
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error("Error fetching doctor stats:", error);
+      return {
+        success: false,
+        error: error.response?.data?.message || "Failed to fetch doctor stats",
+      };
+    }
+  },
 };
 
 export const appointmentService = {
@@ -232,6 +319,82 @@ export const appointmentService = {
       };
     }
   },
+
+  getApproveAppointment: async () => {
+    try {
+      const response = await api.get("/appointments");
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error("Error fetching approved appointments:", error);
+      return {
+        success: false,
+        error: error.response?.data?.message || "Failed to fetch approved appointments",
+      };
+    }
+  },
+
+  getDoctorAppointments: async (doctorId: string) => {
+    try {
+      const response = await api.get(`/appointments/doctor/${doctorId}`);
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error("Error fetching doctor appointments:", error);
+      return {
+        success: false,
+        error: error.response?.data?.message || "Failed to fetch doctor appointments",
+      };
+    }
+  },
+
+  addAppointmentSlots: async (doctorId: string, slotData: { date: string; timeSlots: string[] }) => {
+    try {
+      const requestData = {
+        doctorId: doctorId,
+        date: slotData.date,
+        time: slotData.timeSlots,
+      };
+      
+      console.log("API Request Data:", requestData);
+      
+      const response = await api.post("/appointments", requestData);
+      
+      console.log("API Response:", response.data);
+      
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error("Error adding appointment slots:", error);
+      console.error("Error response data:", error.response?.data);
+      return {
+        success: false,
+        error: error.response?.data?.message || "Failed to add appointment slots",
+      };
+    }
+  },
+
+  deletAppointment: async (slotId: string) => {
+    try {
+      const response = await api.delete(`/appointments/${slotId}`);
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error("Error deleting appointment slot:", error);
+      return {
+        success: false,
+        error: error.response?.data?.message || "Failed to delete appointment slot",
+      };
+    }
+  },
 };
 
 export const chatService = {
@@ -257,6 +420,19 @@ export const chatService = {
       throw error;
     }
   },
+
+  getPatientOfDoctor: async () => {
+    try {
+      const response = await api.get("doctor/client");
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error(`Error fetching doctor clients:`, error);
+      throw error;
+    }
+  },
 };
 
 interface RegisterData {
@@ -270,3 +446,21 @@ interface RegisterData {
   age: string;
   chronicDisease: string;
 }
+
+export const userService = {
+  getUserById: async (userId: string) => {
+    try {
+      const response = await api.get(`/users/${userId}`);
+      return {
+        success: true,
+        data: response.data.data,
+      };
+    } catch (error: any) {
+      console.error(`Error fetching user with id ${userId}:`, error);
+      return {
+        success: false,
+        error: error.response?.data?.message || `Failed to fetch user ${userId}`,
+      };
+    }
+  },
+};
